@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace TeamServer.Controllers
+namespace TeamServer.Models
 {
     [Controller]
     public class HttpListenerController : ControllerBase
