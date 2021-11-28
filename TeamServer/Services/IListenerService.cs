@@ -1,10 +1,8 @@
-﻿using TeamServer.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-
+using TeamServer.Models;
 
 namespace TeamServer.Services
 {
@@ -27,7 +25,7 @@ namespace TeamServer.Services
 
         public Listener GetListener(string name)
         {
-            return _listeners.FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return _listeners.FirstOrDefault(l => l.Name.Equals(name));
         }
 
         public IEnumerable<Listener> GetListeners()
