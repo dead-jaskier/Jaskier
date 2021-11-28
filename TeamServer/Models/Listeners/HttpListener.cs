@@ -34,12 +34,13 @@ namespace TeamServer.Models
             var host = hostBuilder.Build();
 
             _tokenSource = new CancellationTokenSource();
-            host.RunAsync(_tokenSource.Token);
+            var task = host.RunAsync(_tokenSource.Token);
         }
 
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSingleton(AgentService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)
