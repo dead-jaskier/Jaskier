@@ -30,7 +30,6 @@ namespace Agent.Models
             _client.BaseAddress = new Uri($"{ConnectAddress}:{ConnectPort}");
             _client.DefaultRequestHeaders.Clear();
 
-
         }
 
         public override Task Start()
