@@ -3,16 +3,38 @@
 using System;
 using System.Diagnostics;
 using System.Security.Principal;
+using System.Threading;
 
 namespace Agent
 {
     internal class Program
     {
         private static AgentMetaData _metadata;
+        private static CommModule _commModule;
+
+        private static CancellationTokenSource _tokenSource;
+
 
         static void Main(string[] args)
         {
             GenerateMetadata();
+
+            _commModule = new HttpCommModule("localhost", 8080);
+            _commModule.Init(_metadata);
+            _commModule.Start();
+
+            while (!_tokenSource.IsCancellationRequested)
+            {
+                if (_commModule.RecvData(out var tasks))
+                {
+                    // action tasks
+                }
+            }
+        }
+
+        public void Stop()
+        {
+            _tokenSource.Cancel();
         }
 
         static void GenerateMetadata()
