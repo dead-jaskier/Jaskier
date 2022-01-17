@@ -17,7 +17,7 @@ namespace Agent
 
         static void Main(string[] args)
         {
-            Thread.Sleep(20000);
+            Thread.Sleep(10000);
 
             GenerateMetadata();
 
