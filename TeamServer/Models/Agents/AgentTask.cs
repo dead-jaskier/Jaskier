@@ -1,4 +1,4 @@
-﻿namespace TeamServer.Models.Agents
+﻿namespace TeamServer.Models
 {
     public class AgentTask
     {

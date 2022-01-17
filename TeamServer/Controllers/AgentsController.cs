@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApiModels.Requests;
 
+using Microsoft.AspNetCore.Mvc;
+
+using System;
+
+using TeamServer.Models;
 using TeamServer.Services;
 
 namespace TeamServer.Controllers
@@ -22,13 +27,58 @@ namespace TeamServer.Controllers
             return Ok(agents);
         }
 
-        [HttpGet("{name}")]
-        public IActionResult GetAgents(string name)
+        [HttpGet("{agentId}")]
+        public IActionResult GetAgents(string agentId)
         {
-            var agent = _agents.GetAgent(name);
+            var agent = _agents.GetAgent(agentId);
             if (agent is null) return NotFound();
 
             return Ok(agent);
+        }
+
+        [HttpGet("{agentId}/tasks")]
+        public IActionResult GetTaskResults(string agentId, string taskId)
+        {
+            var agent = _agents.GetAgent(agentId);
+            if (agent is null) return NotFound("Agent not found");
+
+            var results = agent.GetTaskResults();
+            return Ok(results);
+        }
+
+        [HttpGet("{agentId}/tasks/{taskId}")]
+        public IActionResult GetTaskResult(string agentId, string taskId)
+        {
+            var agent = _agents.GetAgent(agentId);
+            if (agent is null) return NotFound("Agent not found");
+
+            var result = agent.GetTaskResult(taskId);
+            if (result is null) return NotFound("Task not found");
+
+            return Ok(result);
+        }
+
+
+        [HttpPost("{agentId}")]
+        public IActionResult TaskAgent(string agentId, [FromBody] TaskAgentRequest request)
+        {
+            var agent = _agents.GetAgent(agentId);
+            if (agent is null) return NotFound();
+
+            var task = new AgentTask()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Command = request.Command,
+                Arguments = request.Arguments,
+                File = request.File
+            };
+
+            agent.QueueTask(task);
+
+            var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";
+            var path = $"{root}/tasks/{task.Id}";
+
+            return Created(path, task);
         }
     }
 }

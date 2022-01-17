@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-
-using TeamServer.Models.Agents;
+using System.Linq;
 
 namespace TeamServer.Models
 {
@@ -12,6 +11,7 @@ namespace TeamServer.Models
         public DateTime LastSeen { get; private set; }
 
         private readonly ConcurrentQueue<AgentTask> _pendingTasks = new();
+        private readonly List<AgentTaskResult> _taskResults = new();
 
         public Agent(AgentMetaData metadata)
         {
@@ -37,6 +37,21 @@ namespace TeamServer.Models
             }
 
             return tasks;
+        }
+
+        public AgentTaskResult GetTaskResult(string taskId)
+        {
+            return GetTaskResults().FirstOrDefault(r => r.Id.Equals(taskId));
+        }
+
+        public IEnumerable<AgentTaskResult> GetTaskResults()
+        {
+            return _taskResults;
+        }
+
+        public void AddTaskResults(IEnumerable<AgentTaskResult> results)
+        {
+            _taskResults.AddRange(results);
         }
     }
 }
