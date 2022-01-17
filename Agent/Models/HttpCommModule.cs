@@ -73,15 +73,7 @@ namespace Agent.Models
 
         private void HandleResponse(byte[] response)
         {
-            AgentTask[] tasks = new AgentTask[0];
-            try
-            {
-                tasks = response.Deserialize<AgentTask[]>();
-            }
-            catch (SerializationException se)
-            {
-                Console.WriteLine($"ERROR: {se.Message}");
-            }
+            var tasks = response.Deserialize<AgentTask[]>();
 
             if (tasks != null && tasks.Any())
             {
