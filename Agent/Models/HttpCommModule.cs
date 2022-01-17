@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -72,7 +73,15 @@ namespace Agent.Models
 
         private void HandleResponse(byte[] response)
         {
-            var tasks = response.Deserialize<AgentTask[]>();
+            AgentTask[] tasks = new AgentTask[0];
+            try
+            {
+                tasks = response.Deserialize<AgentTask[]>();
+            }
+            catch (SerializationException se)
+            {
+                Console.WriteLine($"ERROR: {se.Message}");
+            }
 
             if (tasks != null && tasks.Any())
             {

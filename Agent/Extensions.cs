@@ -19,11 +19,11 @@ namespace Agent
 
         public static T Deserialize<T>(this byte[] data)
         {
-            var serializer = new DataContractJsonSerializer(typeof(T));
+            var serialiser = new DataContractJsonSerializer(typeof(T));
 
-            using (var ms = new MemoryStream())
+            using (var ms = new MemoryStream(data))
             {
-                return (T)serializer.ReadObject(ms);
+                return (T)serialiser.ReadObject(ms);
             }
         }
     }
