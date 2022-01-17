@@ -60,7 +60,7 @@ namespace Agent
             _metadata = new AgentMetaData()
             {
                 Id = Guid.NewGuid().ToString(),
-                HostName = Environment.MachineName,
+                HostName = Environment.MachineName, // Alter this to pull Hostname from DNS for more reliable return
                 UserName = identity.Name,
                 ProcessName = process.ProcessName,
                 ProcessId = process.Id,
