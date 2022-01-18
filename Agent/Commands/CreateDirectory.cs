@@ -1,11 +1,7 @@
 ﻿using Agent.Models;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
@@ -18,11 +14,11 @@ namespace Agent.Commands
             string path;
 
             if (task.Arguments is null || task.Arguments.Length == 0)
-{
-                path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            {
+                return "Arguments not found.";
             }
             else
-{
+            {
                 path = task.Arguments[0];
             }
 
