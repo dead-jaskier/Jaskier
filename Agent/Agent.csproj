@@ -47,6 +47,7 @@
     <Compile Include="Commands\ChangeDirectory.cs" />
     <Compile Include="Commands\CreateDirectory.cs" />
     <Compile Include="Commands\DeleteDirectory.cs" />
+    <Compile Include="Commands\ExecuteAssembly.cs" />
     <Compile Include="Commands\ListDirectory.cs" />
     <Compile Include="Commands\ListProcesses.cs" />
     <Compile Include="Commands\PrintWorkingDirectory.cs" />
